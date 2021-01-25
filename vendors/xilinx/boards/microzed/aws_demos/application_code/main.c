@@ -256,7 +256,7 @@ time_t xReturn;
     BaseType_t xApplicationDNSQueryHook( const char * pcName )
     {
 
-    	configPRINTF( ("xApplicationDNSQueryHook \n\r") );
+    	configPRINTF( ( "xApplicationDNSQueryHook: %s \n\r", pcName ) );
         BaseType_t xReturn;
 
         /* Determine if a name lookup is for this node.  Two names are given
