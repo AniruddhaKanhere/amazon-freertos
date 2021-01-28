@@ -82,7 +82,7 @@ extern void vLoggingPrintf( const char * pcFormatString,
 #define ipconfigUSE_LLMNR                          ( 1 )
 
 /* Include support for NBNS: NetBIOS Name Service (Microsoft) */
-#define ipconfigUSE_NBNS                           ( 1 )
+#define ipconfigUSE_NBNS                           ( 0 )
 
 /* Include support for DNS caching.  For TCP, having a small DNS cache is very
  * useful.  When a cache is present, ipconfigDNS_REQUEST_ATTEMPTS can be kept low
