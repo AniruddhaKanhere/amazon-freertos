@@ -299,6 +299,8 @@ extern uint32_t ulRand();
 #define ipconfigSOCKET_HAS_USER_WAKE_CALLBACK    ( 1 )
 #define ipconfigUSE_CALLBACKS                    ( 0 )
 
+#define ipconfigDNS_USE_CALLBACKS                ( 1 )
+#define ipconfigCOMPATIBLE_WITH_SINGLE           ( 1 )
 
 #define portINLINE                               __inline
 

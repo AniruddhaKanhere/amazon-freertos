@@ -41,7 +41,10 @@ uint32_t TEST_FreeRTOS_TCP_prvParseDNSReply( uint8_t * pucUDPPayloadBuffer,
                                              size_t xBufferLength,
                                              TickType_t xIdentifier )
 {
-    return prvParseDNSReply( pucUDPPayloadBuffer, xBufferLength, xIdentifier );
+    struct freertos_addrinfo xAddress, * pxAddress;
+    pxAddress = &xAddress;
+
+    return prvParseDNSReply( pucUDPPayloadBuffer, xBufferLength, &pxAddress, xIdentifier );
 }
 /*-----------------------------------------------------------*/
 
