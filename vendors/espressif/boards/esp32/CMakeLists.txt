@@ -92,6 +92,7 @@ set(
     "${esp_idf_dir}/components/newlib/platform_include"
     "${esp_idf_dir}/components/soc/src/esp32/include"
     "${esp_idf_dir}/components/soc/soc/esp32/include"
+    "${esp_idf_dir}/components/soc/soc/include"
     "${esp_idf_dir}/components/soc/include"
     "${esp_idf_dir}/components/spi_flash/include"
     "${esp_idf_dir}/components/vfs/include"

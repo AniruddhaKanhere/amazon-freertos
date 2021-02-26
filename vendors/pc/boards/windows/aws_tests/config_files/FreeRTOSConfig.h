@@ -48,7 +48,7 @@
 #define configMAX_PRIORITIES                       ( 7 )
 #define configTICK_RATE_HZ                         ( 1000 )                  /* In this non-real time simulated environment the tick frequency has to be at least a multiple of the Win32 tick frequency, and therefore very slow. */
 #define configMINIMAL_STACK_SIZE                   ( ( unsigned short ) 60 ) /* In this simulated case, the stack only has to hold one small structure as the real stack is part of the Win32 thread. */
-#define configTOTAL_HEAP_SIZE                      ( ( size_t ) ( 2048U * 1024U ) )
+#define configTOTAL_HEAP_SIZE                      ( ( size_t ) ( 2048U * 1024U * 2U ) )
 #define configMAX_TASK_NAME_LEN                    ( 15 )
 #define configUSE_TRACE_FACILITY                   1
 #define configUSE_16_BIT_TICKS                     0
@@ -171,7 +171,7 @@ extern void vLoggingPrint( const char * pcMessage );
  * results in the wired network being used, while setting
  * configNETWORK_INTERFACE_TO_USE to 2 results in the wireless network being
  * used. */
-#define configNETWORK_INTERFACE_TO_USE       ( 5L )
+#define configNETWORK_INTERFACE_TO_USE       ( 6L )
 
 /* The address of an echo server that will be used by the two demo echo client
  * tasks:

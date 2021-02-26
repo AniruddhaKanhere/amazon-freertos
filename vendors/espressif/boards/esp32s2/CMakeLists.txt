@@ -303,11 +303,11 @@ target_include_directories(
 target_compile_options(
     AFR::common_io::mcu_port
     INTERFACE
-    -Wno-implicit-function-declaration
-    -Wno-format -Wno-maybe-uninitialized
-    -Wno-pointer-sign
-    -Wno-unused-but-set-variable
-    -Wno-incompatible-pointer-types
+#    -Wno-implicit-function-declaration
+#    -Wno-format -Wno-maybe-uninitialized
+#    -Wno-pointer-sign
+#    -Wno-unused-but-set-variable
+#    -Wno-incompatible-pointer-types
 )
 
 if(AFR_IS_TESTING)
