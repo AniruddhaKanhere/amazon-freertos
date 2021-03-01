@@ -815,23 +815,32 @@ static BaseType_t prvConnectHelperWithRetry( volatile Socket_t * pxSocket,
             {
                 xIsConnected = pdTRUE;
             }
+        }
+
+        /* If any step failed, do cleanup. */
+        if( xResult != SOCKETS_ERROR_NONE )
+        {
+            /* Close socket regardless of the number of retries. */
+            SOCKETS_Close( * pxSocket );
+
+            /* Mark the socket as invalid. */
+            *pxSocket = SOCKETS_INVALID_SOCKET;
+
+            if( xRetry < tcptestRETRY_CONNECTION_TIMES )
+            {
+                /* Reset the result. */
+                xResult = SOCKETS_ERROR_NONE;
+                xRetry++;
+
+                /* Delay the retry. */
+                vTaskDelay( xRetryTimeoutTicks );
+
+                /* Exponentially backoff the retry times */
+                xRetryTimeoutTicks *= 2; /*Arbitrarily chose 2*/
+            }
             else
             {
-                if( xRetry < tcptestRETRY_CONNECTION_TIMES )
-                {
-                    SOCKETS_Close( *pxSocket );
-                    *pxSocket = SOCKETS_INVALID_SOCKET;
-                    xResult = SOCKETS_ERROR_NONE;
-                    xRetry++;
-                    vTaskDelay( xRetryTimeoutTicks );
-                    /* Exponentially backoff the retry times */
-                    xRetryTimeoutTicks *= 2; /*Arbitrarily chose 2*/
-                }
-                else
-                {
-                    /* Too many failures. Give up. */
-                    break;
-                }
+                break;
             }
         }
     }
@@ -1091,7 +1100,6 @@ static BaseType_t prvCheckTimeout( TickType_t xStartTime,
 
 TEST_GROUP_RUNNER( Full_TCP )
 {
-# if 0
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_CloseInvalidParams );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_CloseWithoutReceiving );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_ShutdownInvalidParams );
@@ -1113,10 +1121,8 @@ TEST_GROUP_RUNNER( Full_TCP )
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_Recv_Invalid );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_htons_HappyCase );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_inet_addr_quick_HappyCase );
-
-#endif
+ 
     #if ( tcptestSECURE_SERVER == 1 )
-#if 0
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_CloseInvalidParams );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_CloseWithoutReceiving );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_ShutdownInvalidParams );
@@ -1138,9 +1144,9 @@ TEST_GROUP_RUNNER( Full_TCP )
         /*SECURE_SOCKETS_Socket_InvalidInputParams DNE.*/
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_Send_Invalid );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_Recv_Invalid );
+ 
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_SockEventHandler );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_NonBlockingConnect );
-#endif
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_TwoSecureConnections );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_SetSecureOptionsAfterConnect );
     #endif /* if ( tcptestSECURE_SERVER == 1 ) */
