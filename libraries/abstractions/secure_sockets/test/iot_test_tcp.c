@@ -1100,6 +1100,7 @@ static BaseType_t prvCheckTimeout( TickType_t xStartTime,
 
 TEST_GROUP_RUNNER( Full_TCP )
 {
+    
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_CloseInvalidParams );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_CloseWithoutReceiving );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_ShutdownInvalidParams );
@@ -1121,8 +1122,10 @@ TEST_GROUP_RUNNER( Full_TCP )
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_Recv_Invalid );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_htons_HappyCase );
     RUN_TEST_CASE( Full_TCP, AFQP_SOCKETS_inet_addr_quick_HappyCase );
+    
  
     #if ( tcptestSECURE_SERVER == 1 )
+        #if 1
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_CloseInvalidParams );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_CloseWithoutReceiving );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_ShutdownInvalidParams );
@@ -1147,6 +1150,8 @@ TEST_GROUP_RUNNER( Full_TCP )
  
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_SockEventHandler );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_NonBlockingConnect );
+        #endif
+
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_TwoSecureConnections );
         RUN_TEST_CASE( Full_TCP, AFQP_SECURE_SOCKETS_SetSecureOptionsAfterConnect );
     #endif /* if ( tcptestSECURE_SERVER == 1 ) */
@@ -3176,14 +3181,12 @@ static void prvTwoSecureConnections( void )
     if( TEST_PROTECT() )
     {
         /* Create 2 sockets- one which will connect to AWS Broker, one which will connect to secure server. */
-        
         xResult = prvConnectHelperWithRetry( &xSocketAWS, eAwsBroker, xReceiveTimeOut, xSendTimeOut, &xSocketOpenAWS );
         TEST_ASSERT_EQUAL_INT32_MESSAGE( SOCKETS_ERROR_NONE, xResult, "Failed to connect to AWS Broker" );
 
-        //xResult = prvConnectHelperWithRetry( &xSocketSecServer, eSecure, xReceiveTimeOut, xSendTimeOut, &xSocketOpenSecServer );
+        xResult = prvConnectHelperWithRetry( &xSocketSecServer, eSecure, xReceiveTimeOut, xSendTimeOut, &xSocketOpenSecServer );
         TEST_ASSERT_EQUAL_INT32_MESSAGE( SOCKETS_ERROR_NONE, xResult, "Failed to connect to secure server" );
 
-        #if 0
         /* Send message 1x to AWS Broker, 2x to Secure Echo Server, alternating. */
         xResult = prvSendHelper( xSocketSecServer, ( uint8_t * ) cMessageSecServer, sizeof( cMessageSecServer ) );
         TEST_ASSERT_EQUAL_UINT32_MESSAGE( pdPASS, xResult, "Send to secure server failed." );
@@ -3195,7 +3198,6 @@ static void prvTwoSecureConnections( void )
         /* Receive from secure echo server 1x. */
         xResult = prvRecvHelper( xSocketSecServer, pucRxBuffer, sizeof( cMessageSecServer ) );
         TEST_ASSERT_EQUAL_UINT32_MESSAGE( pdPASS, xResult, "Received incorrect number of bytes from sec server." );
-        #endif
         
         /* Verify the response is correct. */
         for( ulIndex = 0; ulIndex < sizeof( cMessageSecServer ); ulIndex++ )
@@ -3208,16 +3210,18 @@ static void prvTwoSecureConnections( void )
 
         TEST_ASSERT_EQUAL_MESSAGE( pdPASS, xResult, "Received incorrect message from secure server. " );
 
+#if 1
         /* There is no echo from the AWS broker, but let's make sure we don't see anything unexpected. */
-        //xResult = SOCKETS_Recv( xSocketAWS, pucRxBuffer, sizeof( cMessageAWS ), 0 /* flags. */ );
+        xResult = SOCKETS_Recv( xSocketAWS, pucRxBuffer, sizeof( cMessageAWS ), 0 /* flags. */ );
 
         if( ( xResult != 0 ) && ( xResult != SOCKETS_EWOULDBLOCK ) ) /* TS-2390 */
         {
             TEST_FAIL_MESSAGE( "Received bytes when there should be none to receive." );
         }
+#endif
 
         /* Receive the second message from the secure echo server. */
-        //xResult = prvRecvHelper( xSocketSecServer, pucRxBuffer, sizeof( cMessageSecServer ) );
+        xResult = prvRecvHelper( xSocketSecServer, pucRxBuffer, sizeof( cMessageSecServer ) );
         TEST_ASSERT_EQUAL_UINT32_MESSAGE( pdPASS, xResult, "Received incorrect number of bytes from sec server." );
 
         for( ulIndex = 0; ulIndex < sizeof( cMessageSecServer ); ulIndex++ )
@@ -3231,9 +3235,9 @@ static void prvTwoSecureConnections( void )
         TEST_ASSERT_EQUAL_MESSAGE( pdPASS, xResult, "Received incorrect message from secure server. " );
 
         /* Shutdown both sockets. */
-        //xResult = prvShutdownHelper( xSocketAWS );
+        xResult = prvShutdownHelper( xSocketAWS );
         TEST_ASSERT_EQUAL_UINT32_MESSAGE( SOCKETS_ERROR_NONE, xResult, "Failed to shutdown socket." );
-        //xResult = prvShutdownHelper( xSocketSecServer );
+        xResult = prvShutdownHelper( xSocketSecServer );
         TEST_ASSERT_EQUAL_UINT32_MESSAGE( SOCKETS_ERROR_NONE, xResult, "Failed to shutdown socket." );
         
     }
